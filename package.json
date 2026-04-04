@@ -1,0 +1,43 @@
+{
+  "name": "@qmxme/pi-git-guard",
+  "version": "0.1.0",
+  "description": "Blocks destructive git operations (push, tag -d, reset --hard) in pi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qmx/pi-git-guard"
+  },
+  "type": "module",
+  "main": "./git-guard.ts",
+  "types": "./git-guard.ts",
+  "files": [
+    "git-guard.ts",
+    "README.md"
+  ],
+  "keywords": [
+    "pi",
+    "pi-package",
+    "extension",
+    "git",
+    "security"
+  ],
+  "pi": {
+    "extensions": [
+      "./git-guard.ts"
+    ]
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run test && npm run typecheck"
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*"
+  },
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "^0.63.0",
+    "@types/node": "^22.10.7",
+    "typescript": "^5.7.3",
+    "vitest": "^4.1.2"
+  },
+  "license": "MIT"
+}
