@@ -28,6 +28,11 @@ describe("git-guard", () => {
         expect(isBlockedCommand("cd /some/path && git push origin main")).toBe("git push is blocked");
         expect(isBlockedCommand("cd /path && git push --force")).toBe("git push is blocked");
       });
+
+      it("blocks git push with git -C flag", () => {
+        expect(isBlockedCommand("git -C /tmp/foo push")).toBe("git push is blocked");
+        expect(isBlockedCommand("git -C /some/path push origin main")).toBe("git push is blocked");
+      });
     });
 
     describe("git tag -d", () => {
@@ -48,6 +53,11 @@ describe("git-guard", () => {
       it("blocks git tag -d with leading commands", () => {
         expect(isBlockedCommand("cd /path && git tag -d v1.0")).toBe("Deleting tags is blocked");
         expect(isBlockedCommand("cd /path && git tag --delete mytag")).toBe("Deleting tags is blocked");
+      });
+
+      it("blocks git tag -d with git -C flag", () => {
+        expect(isBlockedCommand("git -C /tmp/foo tag -d v1.0")).toBe("Deleting tags is blocked");
+        expect(isBlockedCommand("git -C /some/path tag --delete mytag")).toBe("Deleting tags is blocked");
       });
     });
 
@@ -74,6 +84,12 @@ describe("git-guard", () => {
 
       it("blocks git reset --hard with subshell", () => {
         expect(isBlockedCommand("(cd /tmp && git reset --hard)")).toBe("git reset --hard is blocked");
+      });
+
+      it("blocks git reset --hard with git -C flag", () => {
+        expect(isBlockedCommand("git -C /tmp/foo reset --hard")).toBe("git reset --hard is blocked");
+        expect(isBlockedCommand("git -C /tmp/foo reset --hard HEAD~1")).toBe("git reset --hard is blocked");
+        expect(isBlockedCommand("git -C /some/path  reset  --hard")).toBe("git reset --hard is blocked");
       });
     });
   });

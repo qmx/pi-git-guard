@@ -7,10 +7,10 @@ interface BlockedCommand {
 }
 
 const BLOCKED_COMMANDS: BlockedCommand[] = [
-  { pattern: /\bgit\s+push\b/, reason: "git push is blocked" },
-  { pattern: /\bgit\s+tag\s+(-d|--delete)/, reason: "Deleting tags is blocked" },
-  { pattern: /\bgit\s+reset\s+--hard/, reason: "git reset --hard is blocked" },
-  { pattern: /\bgit\s+update-ref\b/, reason: "git update-ref is blocked" },
+  { pattern: /\bgit(?:\s+-C\s+\S+)?\s+push\b/, reason: "git push is blocked" },
+  { pattern: /\bgit(?:\s+-C\s+\S+)?\s+tag\s+(-d|--delete)/, reason: "Deleting tags is blocked" },
+  { pattern: /\bgit(?:\s+-C\s+\S+)?\s+reset\s+--hard/, reason: "git reset --hard is blocked" },
+  { pattern: /\bgit(?:\s+-C\s+\S+)?\s+update-ref\b/, reason: "git update-ref is blocked" },
 ];
 
 export function isBlockedCommand(command: string): string | null {
