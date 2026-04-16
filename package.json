@@ -1,6 +1,6 @@
 {
   "name": "@qmxme/pi-git-guard",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Blocks destructive git operations (push, tag -d, reset --hard) in pi",
   "repository": {
     "type": "git",
