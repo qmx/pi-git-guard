@@ -23,6 +23,11 @@ describe("git-guard", () => {
         expect(isBlockedCommand("git  push")).toBe("git push is blocked");
         expect(isBlockedCommand("git   push   origin   main")).toBe("git push is blocked");
       });
+
+      it("blocks git push with leading commands (cd && ...)", () => {
+        expect(isBlockedCommand("cd /some/path && git push origin main")).toBe("git push is blocked");
+        expect(isBlockedCommand("cd /path && git push --force")).toBe("git push is blocked");
+      });
     });
 
     describe("git tag -d", () => {
@@ -39,6 +44,11 @@ describe("git-guard", () => {
       it("blocks git tag -d with multiple tags", () => {
         expect(isBlockedCommand("git tag -d v1.0 v2.0 v3.0")).toBe("Deleting tags is blocked");
       });
+
+      it("blocks git tag -d with leading commands", () => {
+        expect(isBlockedCommand("cd /path && git tag -d v1.0")).toBe("Deleting tags is blocked");
+        expect(isBlockedCommand("cd /path && git tag --delete mytag")).toBe("Deleting tags is blocked");
+      });
     });
 
     describe("git reset --hard", () => {
@@ -54,6 +64,16 @@ describe("git-guard", () => {
 
       it("blocks git reset --hard with multiple spaces", () => {
         expect(isBlockedCommand("git  reset  --hard")).toBe("git reset --hard is blocked");
+      });
+
+      it("blocks git reset --hard with leading commands (cd && ...)", () => {
+        expect(isBlockedCommand("cd /home/qmx/.config/nix && git reset --hard HEAD~1")).toBe("git reset --hard is blocked");
+        expect(isBlockedCommand("cd /some/path && git reset --hard")).toBe("git reset --hard is blocked");
+        expect(isBlockedCommand("cd /path && git  reset  --hard HEAD~1")).toBe("git reset --hard is blocked");
+      });
+
+      it("blocks git reset --hard with subshell", () => {
+        expect(isBlockedCommand("(cd /tmp && git reset --hard)")).toBe("git reset --hard is blocked");
       });
     });
   });
@@ -132,13 +152,17 @@ describe("git-guard", () => {
       expect(isBlockedCommand("npm install")).toBe(null);
     });
 
-    it("handles git commands with leading whitespace", () => {
-      expect(isBlockedCommand("  git push")).toBe(null); // Won't match due to leading spaces
+    it("blocks git commands with leading whitespace", () => {
+      // Now catches leading whitespace due to word boundary
+      expect(isBlockedCommand("  git push")).toBe("git push is blocked");
+      expect(isBlockedCommand("  git reset --hard")).toBe("git reset --hard is blocked");
     });
 
-    it("handles push in different context", () => {
-      expect(isBlockedCommand("echo 'git push'")).toBe(null);
-      expect(isBlockedCommand("grep 'git push' file.txt")).toBe(null);
+    it("blocks git commands in different context (strings)", () => {
+      // Word boundary matches inside strings - this is intentional for safety
+      expect(isBlockedCommand("echo 'git push'")).toBe("git push is blocked");
+      expect(isBlockedCommand("grep 'git push' file.txt")).toBe("git push is blocked");
+      expect(isBlockedCommand("echo 'git reset --hard'")).toBe("git reset --hard is blocked");
     });
   });
 });
